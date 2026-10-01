@@ -98,6 +98,42 @@ if not year_df.empty:
 else:
     st.info(f"No entries yet for {year}. Add a month above to get started.")
 
+# ---------------- Delete data ----------------
+st.subheader("Delete Data")
+
+del_col1, del_col2 = st.columns(2)
+
+with del_col1:
+    st.markdown("**Delete a single month**")
+    if not df.empty:
+        existing = df.apply(lambda r: f"{r['Month']} {r['Year']}", axis=1).tolist()
+        choice = st.selectbox("Select entry to delete", ["-- choose --"] + existing, key="del_month")
+        if choice != "-- choose --":
+            confirm = st.checkbox(f"I confirm I want to delete {choice}", key="confirm_month")
+            if st.button("Delete this month", key="btn_del_month") and confirm:
+                sel_month, sel_year = choice.rsplit(" ", 1)
+                df = df[~((df["Year"] == int(sel_year)) & (df["Month"] == sel_month))]
+                save_data(df)
+                st.success(f"Deleted {choice}.")
+                st.rerun()
+    else:
+        st.write("No entries to delete.")
+
+with del_col2:
+    st.markdown("**Delete a whole year**")
+    if not df.empty:
+        years_present = sorted(df["Year"].unique().tolist())
+        year_choice = st.selectbox("Select year to clear", ["-- choose --"] + years_present, key="del_year")
+        if year_choice != "-- choose --":
+            confirm_year = st.checkbox(f"I confirm I want to delete ALL {year_choice} data", key="confirm_year")
+            if st.button("Delete this year", key="btn_del_year") and confirm_year:
+                df = df[df["Year"] != year_choice]
+                save_data(df)
+                st.success(f"Deleted all data for {year_choice}.")
+                st.rerun()
+    else:
+        st.write("No data to delete.")
+
 # ---------------- All-time data + export ----------------
 with st.expander("View all saved data / export"):
     if not df.empty:
