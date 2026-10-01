@@ -116,19 +116,13 @@ def render_section(currency_name, symbol, data_file, key_prefix):
             choice = st.selectbox("Select entry to delete", ["-- choose --"] + existing,
                                    key=f"{key_prefix}_del_month")
             if choice != "-- choose --":
-                confirm = st.checkbox(f"I confirm I want to delete {choice}",
-                                       key=f"{key_prefix}_confirm_month")
                 if st.button("Delete this month", key=f"{key_prefix}_btn_del_month"):
-                    if confirm:
-                        sel_month, sel_year = choice.rsplit(" ", 1)
-                        df = df[~((df["Year"] == int(sel_year)) & (df["Month"] == sel_month))]
-                        save_data(df, data_file)
-                        st.session_state.pop(f"{key_prefix}_del_month", None)
-                        st.session_state.pop(f"{key_prefix}_confirm_month", None)
-                        st.success(f"Deleted {choice}.")
-                        st.rerun()
-                    else:
-                        st.warning("Please check the confirmation box first.")
+                    sel_month, sel_year = choice.rsplit(" ", 1)
+                    df = df[~((df["Year"] == int(sel_year)) & (df["Month"] == sel_month))]
+                    save_data(df, data_file)
+                    st.session_state.pop(f"{key_prefix}_del_month", None)
+                    st.success(f"Deleted {choice}.")
+                    st.rerun()
         else:
             st.write("No entries to delete.")
 
@@ -139,18 +133,12 @@ def render_section(currency_name, symbol, data_file, key_prefix):
             year_choice = st.selectbox("Select year to clear", ["-- choose --"] + years_present,
                                         key=f"{key_prefix}_del_year")
             if year_choice != "-- choose --":
-                confirm_year = st.checkbox(f"I confirm I want to delete ALL {year_choice} data",
-                                            key=f"{key_prefix}_confirm_year")
                 if st.button("Delete this year", key=f"{key_prefix}_btn_del_year"):
-                    if confirm_year:
-                        df = df[df["Year"] != year_choice]
-                        save_data(df, data_file)
-                        st.session_state.pop(f"{key_prefix}_del_year", None)
-                        st.session_state.pop(f"{key_prefix}_confirm_year", None)
-                        st.success(f"Deleted all data for {year_choice}.")
-                        st.rerun()
-                    else:
-                        st.warning("Please check the confirmation box first.")
+                    df = df[df["Year"] != year_choice]
+                    save_data(df, data_file)
+                    st.session_state.pop(f"{key_prefix}_del_year", None)
+                    st.success(f"Deleted all data for {year_choice}.")
+                    st.rerun()
         else:
             st.write("No data to delete.")
 
